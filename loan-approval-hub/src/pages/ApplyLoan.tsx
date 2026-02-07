@@ -38,33 +38,30 @@ const applicationSchema = z.object({
   employmentType: z.enum(['salaried', 'self-employed', 'business', 'retired']),
   employmentDuration: z.coerce.number().min(0, 'Please enter employment duration'),
   employerName: z.string().optional(),
-});
-
+  import DashboardLayout from '@/components/layout/DashboardLayout';
+  import DocumentUpload from '@/components/common/DocumentUpload';
+  import React, { useState } from 'react';
+  import { api } from '../lib/api';
+  import { LoanApplication } from '../types/loan';
 type ApplicationFormData = z.infer<typeof applicationSchema>;
 
-const ApplyLoan = () => {
-  const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+    const [form, setForm] = useState<Partial<LoanApplication>>({});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-
-  const form = useForm<ApplicationFormData>({
-    resolver: zodResolver(applicationSchema),
-    defaultValues: {
-      fullName: '',
-      email: '',
-      phone: '',
-      loanType: 'personal',
-      loanAmount: 10000,
-      loanTerm: 36,
-      purpose: '',
-      annualIncome: 0,
-      monthlyExpenses: 0,
-      creditScore: 700,
-      existingDebts: 0,
-      employmentType: 'salaried',
-      employmentDuration: 0,
-      employerName: '',
-    },
+    const handleSubmit = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await api.createApplication(form);
+        setSuccess(true);
+      } catch (err) {
+        setError('Failed to submit application');
+      } finally {
+        setLoading(false);
+      }
+    };
   });
 
   const totalSteps = 4;

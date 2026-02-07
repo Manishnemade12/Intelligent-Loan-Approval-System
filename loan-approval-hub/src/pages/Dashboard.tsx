@@ -21,14 +21,25 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const stats = mockDashboardStats;
+  const [stats, setStats] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const pieData = [
+  React.useEffect(() => {
+    import('../lib/api').then(({ api }) => {
+      api.getDashboardStats()
+        .then(data => setStats(data))
+        .catch(() => setError('Failed to load dashboard stats'))
+        .finally(() => setLoading(false));
+    });
+  }, []);
+
+  const pieData = stats ? [
     { name: 'Approved', value: stats.approved, color: 'hsl(var(--status-approved))' },
     { name: 'Rejected', value: stats.rejected, color: 'hsl(var(--status-rejected))' },
     { name: 'Manual Review', value: stats.manualReview, color: 'hsl(var(--status-review))' },
     { name: 'Pending', value: stats.pending, color: 'hsl(var(--status-pending))' },
-  ];
+  ] : [];
 
   const recentApplications = mockApplications.slice(0, 5);
 
