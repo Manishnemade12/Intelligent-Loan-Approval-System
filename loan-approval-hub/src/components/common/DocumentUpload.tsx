@@ -48,7 +48,21 @@ const DocumentUpload = ({ onFilesChange, maxFiles = 5, accept }: DocumentUploadP
       }, 200);
     });
 
-    onFilesChange([...uploadedFiles.map((f) => f.file), ...acceptedFiles]);
+      onFilesChange(selectedFiles);
+      if (selectedFiles.length > 0) {
+        setUploading(true);
+        setError(null);
+        try {
+          const formData = new FormData();
+          selectedFiles.forEach(file => formData.append('file', file));
+          // TODO: Add applicationId and documentType as needed
+          await import('../../lib/api').then(({ api }) => api.uploadDocument(formData));
+        } catch (err) {
+          setError('Failed to upload document');
+        } finally {
+          setUploading(false);
+        }
+      }
   }, [uploadedFiles, onFilesChange]);
 
   const removeFile = (id: string) => {

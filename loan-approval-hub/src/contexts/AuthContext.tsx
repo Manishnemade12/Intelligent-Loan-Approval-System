@@ -1,39 +1,45 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, UserRole } from '@/types/loan';
-import { mockUsers } from '@/data/mockData';
+import { api } from '../lib/api';
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  switchRole: (role: UserRole) => void;
+  switchRole?: (role: UserRole) => void;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(mockUsers[1]); // Default to officer for demo
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Try to fetch current user if JWT exists
+    const token = localStorage.getItem('jwt');
+    if (token && !user) {
+      api.getCurrentUser()
+        .then(data => setUser(data.user))
+        .catch(() => setUser(null));
+    }
+  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock login - in production, this would call your API
-    const foundUser = mockUsers.find(u => u.email === email);
-    if (foundUser) {
-      setUser(foundUser);
+    try {
+      const data = await api.login(email, password);
+      localStorage.setItem('jwt', data.token);
+      setUser(data.user);
       return true;
+    } catch (err) {
+      setUser(null);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
+    localStorage.removeItem('jwt');
     setUser(null);
-  };
-
-  const switchRole = (role: UserRole) => {
-    const userForRole = mockUsers.find(u => u.role === role);
-    if (userForRole) {
-      setUser(userForRole);
-    }
   };
 
   return (
@@ -41,7 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user,
       login,
       logout,
-      switchRole,
       isAuthenticated: !!user,
     }}>
       {children}
