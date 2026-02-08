@@ -39,7 +39,7 @@ public class LoanApplicationService {
 
     @Transactional
     public LoanApplicationResponseDTO createApplication(LoanApplicationRequestDTO requestDTO, String userEmail) {
-        log.info("Creating loan application for email: {}", userEmail);
+        // log.info("Creating loan application for email: {}", userEmail);
 
         LoanApplication application = LoanApplication.builder()
                 .applicationId(generateApplicationId())
@@ -80,8 +80,7 @@ public class LoanApplicationService {
 
         if (userRole == UserRole.CUSTOMER) {
             // Customers can only see their own applications
-            applications = applicationRepository.findAll(pageable)
-                    .filter(app -> app.getEmail().equals(userEmail));
+            applications = applicationRepository.findByEmail(userEmail, pageable);
         } else if (userRole == UserRole.OFFICER || userRole == UserRole.ADMIN) {
             // Officers and Admins can see all applications
             applications = applicationRepository.findAll(pageable);

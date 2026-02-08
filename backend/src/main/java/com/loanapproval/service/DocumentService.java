@@ -181,9 +181,6 @@ public class DocumentService {
                 .verifiedAt(document.getVerifiedAt())
                 .extractedData(document.getExtractedData())
                 .extractionNotes(document.getExtractionNotes())
-                .uploadedAt(document.getUploadedAt())
-                .createdAt(document.getCreatedAt())
-                .updatedAt(document.getUpdatedAt())
                 .build();
     }
 }

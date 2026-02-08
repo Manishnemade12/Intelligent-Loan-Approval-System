@@ -17,6 +17,7 @@ import java.util.Optional;
 public interface LoanApplicationRepository extends JpaRepository<LoanApplication, Long> {
     Optional<LoanApplication> findByApplicationId(String applicationId);
     List<LoanApplication> findByEmail(String email);
+    Page<LoanApplication> findByEmail(String email, Pageable pageable);
     Page<LoanApplication> findByStatus(LoanStatus status, Pageable pageable);
     
     @Query("SELECT la FROM LoanApplication la WHERE la.email = :email ORDER BY la.submittedAt DESC")

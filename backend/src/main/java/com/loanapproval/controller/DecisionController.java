@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/applications")
 @RequiredArgsConstructor
@@ -78,6 +80,3 @@ public class DecisionController {
         return ResponseEntity.ok().build();
     }
 }
-
-// Needed for request body
-import java.util.Map;
