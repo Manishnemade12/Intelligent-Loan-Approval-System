@@ -18,8 +18,7 @@ import java.util.List;
     @Index(name = "idx_app_id", columnList = "application_id", unique = true),
     @Index(name = "idx_applicant_email", columnList = "email"),
     @Index(name = "idx_status", columnList = "status"),
-    @Index(name = "idx_submitted_at", columnList = "submitted_at"),
-    @Index(name = "idx_applicant_id", columnList = "applicant_id")
+    @Index(name = "idx_submitted_at", columnList = "submitted_at")
 })
 @Data
 @NoArgsConstructor

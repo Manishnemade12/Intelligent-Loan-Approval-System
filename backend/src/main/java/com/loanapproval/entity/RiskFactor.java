@@ -28,7 +28,7 @@ public class RiskFactor {
     private String description;
 
     // Actual metric value
-    @Column(nullable = false)
+    @Column(name = "metric_value", nullable = false)
     private BigDecimal value;
 
     // Weight in overall score (percentage)
