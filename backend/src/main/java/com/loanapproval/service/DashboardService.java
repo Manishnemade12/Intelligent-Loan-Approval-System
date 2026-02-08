@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -22,10 +25,15 @@ public class DashboardService {
         long rejectedApplications = applicationRepository.countByStatus(LoanStatus.REJECTED);
         long manualReviewApplications = applicationRepository.countByStatus(LoanStatus.MANUAL_REVIEW);
 
-        Double avgProcessingTime = applicationRepository.getAverageProcessingTimeInDays();
-        if (avgProcessingTime == null) {
-            avgProcessingTime = 0.0;
-        }
+        List<com.loanapproval.entity.LoanApplication> reviewedApplications =
+            applicationRepository.findByReviewedAtIsNotNull();
+        double avgProcessingTime = reviewedApplications.isEmpty()
+            ? 0.0
+            : reviewedApplications.stream()
+            .filter(app -> app.getSubmittedAt() != null && app.getReviewedAt() != null)
+            .mapToLong(app -> Duration.between(app.getSubmittedAt(), app.getReviewedAt()).toDays())
+            .average()
+            .orElse(0.0);
 
         Double approvalRate = totalApplications > 0 ?
                 (approvedApplications * 100.0) / totalApplications : 0.0;

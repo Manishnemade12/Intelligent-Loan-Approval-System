@@ -29,8 +29,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
     @Query("SELECT COUNT(la) FROM LoanApplication la")
     long countTotal();
 
-    @Query("SELECT AVG(EXTRACT(DAY FROM (la.reviewedAt - la.submittedAt))) FROM LoanApplication la WHERE la.reviewedAt IS NOT NULL")
-    Double getAverageProcessingTimeInDays();
+    List<LoanApplication> findByReviewedAtIsNotNull();
 
     @Query("SELECT COUNT(la) FROM LoanApplication la WHERE la.status = 'APPROVED' AND la.submittedAt >= :startDate")
     long countApprovedSince(@Param("startDate") LocalDateTime startDate);
